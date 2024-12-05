@@ -7,10 +7,10 @@ import (
 )
 
 type pet struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	Species     string `json:"species"`
-	DateOfBirth string `json:"dateOfBirth"`
+	Id          string `json:"id" binding:"required"`
+	Name        string `json:"name" binding:"required"`
+	Species     string `json:"species" binding:"required"`
+	DateOfBirth string `json:"dateOfBirth" binding:"required"`
 }
 
 var pets = []pet {
@@ -65,9 +65,46 @@ func addPet(context *gin.Context) {
 		return
 	}
 
+	for _, existingPet := range pets {
+		if existingPet.Id == newPet.Id {
+			context.JSON(http.StatusBadRequest, gin.H{
+				"error": "id already in use",
+			})
+			return
+		}
+	}
+
 	pets = append(pets, newPet)
 
 	context.JSON(http.StatusCreated, newPet)
+}
+
+func editPet(context *gin.Context) {
+	id := context.Param("id")
+
+	i, err := findPetIndex(id)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	var editedPet pet
+
+	if err := context.BindJSON(&editedPet); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	pets[i].Name 		= editedPet.Name
+	pets[i].Species		= editedPet.Species
+	pets[i].DateOfBirth = editedPet.DateOfBirth
+
+	context.JSON(http.StatusOK, gin.H{
+		"message": "Pet edited successfully",
+		"pet": 		pets[i],
+	})
 }
 
 func removePet(context *gin.Context) {
@@ -97,6 +134,7 @@ func main() {
 	router.GET   ("/pets",     getPets)
 	router.GET   ("/pets/:id", getPet)	
 	router.POST  ("/pets",     addPet)
+	router.PATCH ("/pets/:id", editPet)
 	router.DELETE("/pets/:id", removePet)
 
 	router.Run("localhost:80")
