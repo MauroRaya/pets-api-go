@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"errors"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type pet struct {
@@ -13,10 +14,10 @@ type pet struct {
 	DateOfBirth string `json:"dateOfBirth" binding:"required"`
 }
 
-var pets = []pet {
-	{Id: "1", Name: "Flakes", Species: "Dog",    DateOfBirth: "10/05/2015"},
-	{Id: "2", Name: "Peppy",  Species: "Parrot", DateOfBirth: "20/06/2004"},
-	{Id: "3", Name: "Jake",   Species: "Cat",    DateOfBirth: "12/01/2019"},
+var pets = []pet{
+	{Id: "1", Name: "Flakes", Species: "Dog", DateOfBirth: "10/05/2015"},
+	{Id: "2", Name: "Peppy", Species: "Parrot", DateOfBirth: "20/06/2004"},
+	{Id: "3", Name: "Jake", Species: "Cat", DateOfBirth: "12/01/2019"},
 }
 
 func getPetById(id string) (*pet, error) {
@@ -97,13 +98,13 @@ func editPet(context *gin.Context) {
 		})
 	}
 
-	pets[i].Name 		= editedPet.Name
-	pets[i].Species		= editedPet.Species
+	pets[i].Name = editedPet.Name
+	pets[i].Species = editedPet.Species
 	pets[i].DateOfBirth = editedPet.DateOfBirth
 
 	context.JSON(http.StatusOK, gin.H{
 		"message": "Pet edited successfully",
-		"pet": 		pets[i],
+		"pet":     pets[i],
 	})
 }
 
@@ -131,11 +132,11 @@ func removePet(context *gin.Context) {
 func main() {
 	router := gin.Default()
 
-	router.GET   ("/pets",     getPets)
-	router.GET   ("/pets/:id", getPet)	
-	router.POST  ("/pets",     addPet)
-	router.PATCH ("/pets/:id", editPet)
+	router.GET("/pets", getPets)
+	router.GET("/pets/:id", getPet)
+	router.POST("/pets", addPet)
+	router.PATCH("/pets/:id", editPet)
 	router.DELETE("/pets/:id", removePet)
 
-	router.Run("localhost:80")
+	router.Run("0.0.0.0:80")
 }
