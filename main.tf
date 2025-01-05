@@ -43,11 +43,15 @@ resource "azurerm_app_service" "pets_api" {
   app_service_plan_id = azurerm_app_service_plan.pets_plan.id
 
   site_config {
-    linux_fx_version = "DOCKER|pets_image:latest"
+    linux_fx_version = "DOCKER|${azurerm_container_registry.pets_acr.login_server}/pets-api:latest"
   }
 
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
     DOCKER_ENABLE_CI                    = "true"
   }
+}
+
+output "acr_login_server" {
+  value = azurerm_container_registry.pets_acr.login_server
 }
