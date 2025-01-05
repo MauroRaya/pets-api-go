@@ -18,10 +18,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - run: |
-        docker build -t petsacr987.azurecr.io/pets-api:latest .
+          docker build -t petsacr987.azurecr.io/pets-api:latest .
       
       - run: |
-        docker push petsacr987.azurecr.io/pets-api:latest
+          docker push petsacr987.azurecr.io/pets-api:latest
 
       - uses: azure/login@v1
         with:
