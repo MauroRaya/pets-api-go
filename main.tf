@@ -9,6 +9,11 @@ terraform {
 
 provider "azurerm" {
   features {}
+
+  client_id       = getenv("ARM_CLIENT_ID")
+  client_secret   = getenv("ARM_CLIENT_SECRET")
+  subscription_id = getenv("ARM_SUBSCRIPTION_ID")
+  tenant_id       = getenv("ARM_TENANT_ID")
 }
 
 resource "azurerm_resource_group" "pets_rg" {

@@ -19,7 +19,14 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
 
       - run: terraform init
+
       - run: terraform plan -out=tfplan
+        env:
+          ARM_CLIENT_ID = ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET = ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID = ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID = ${{ secrets.ARM_TENANT_ID }}
+
       - run: terraform apply -auto-approve tfplan
 
       # Get ACR Login Server
