@@ -12,17 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - run: |
-          docker build -t petsacr987.azurecr.io/pets-api:latest .
-      
-      - run: |
-          docker push petsacr987.azurecr.io/pets-api:latest
-
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -30,3 +19,15 @@ jobs:
       - run: terraform init
       - run: terraform plan -out=tfplan
       - run: terraform apply -auto-approve tfplan
+
+      # Get ACR Login Server
+      - run: echo "ACR_LOGIN_SERVER=$(terraform output -raw acr_login_server)" >> $GITHUB_ENV
+
+      - uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ${{ env.ACR_LOGIN_SERVER }}
+
+      - run: docker build -t ${{ env.ACR_LOGIN_SERVER }}/pets-api:latest .
+      - run: docker push ${{ env.ACR_LOGIN_SERVER }}/pets-api:latest
